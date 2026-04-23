@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TravelAI - Quy Nhơn</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="./src/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h1>Travel AI</h1>
+      <p>Khám phá Quy Nhơn</p>
+
+      <input id="searchInput" type="text" placeholder="Tìm địa điểm...">
+
+      <div class="filter-block">
+        <h3>Khu vực</h3>
+        <div id="regionButtons" class="button-wrap"></div>
+      </div>
+
+      <div class="filter-block">
+        <h3>Loại hình</h3>
+        <div id="categoryButtons" class="button-wrap"></div>
+      </div>
+    </aside>
+
+    <main class="map-panel">
+      <div id="map"></div>
+      <div id="placeCard" class="place-card hidden"></div>
+      <div id="routeInfo" class="route-info hidden"></div>
+    </main>
+
+    <section class="chat-panel">
+      <div class="chat-header">AI Travel Assistant</div>
+      <div id="chatMessages" class="chat-messages"></div>
+      <div class="chat-input-row">
+        <input id="daysInput" type="number" min="1" max="7" value="3">
+        <input id="chatInput" type="text" placeholder="Nhập yêu cầu lịch trình...">
+        <button id="sendBtn">Gửi</button>
+      </div>
+      <div class="itinerary-header">Lịch trình gợi ý</div>
+      <div id="itineraryList" class="itinerary-list"></div>
+    </section>
+  </div>
+
+  <div id="vrModal" class="modal hidden">
+    <div class="modal-content">
+      <button id="closeVrBtn" class="close-btn">×</button>
+      <iframe id="vrFrame" title="VR360" loading="lazy" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./src/app.js"></script>
+</body>
+</html>
