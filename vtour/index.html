@@ -37,20 +37,13 @@
     <script src="tour.js"></script>
 
     <script>
-function getStartScene() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('startscene') || 'scene_1';
-}
-
+// Lệnh khởi tạo krpano
 embedpano({
     xml: "tour.xml",
-    target: "pano-container",
+    target: "pano-container", 
     html5: "always",
-    vars: {
-        startscene: getStartScene()
-    },
     onready: function(krpano_interface) {
-        window.krpano = krpano_interface;
+        window.krpano = krpano_interface; 
     }
 });
     </script>
