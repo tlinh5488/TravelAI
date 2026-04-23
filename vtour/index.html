@@ -1,0 +1,59 @@
+
+
+
+
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo 360 Quy Nhơn</title>
+    <style>
+        /* Làm đẹp giao diện */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center; /* Căn giữa ngang */
+            align-items: center;     /* Căn giữa dọc */
+            height: 100vh;
+            background-color: #ffffff; /* Nền trắng */
+            font-family: Arial, sans-serif;
+        }
+
+        #pano-container {
+            width: 80%;       /* Chiều rộng khung 360 */
+            height: 70vh;     /* Chiều cao khung 360 */
+            border: 5px solid #f0f0f0;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden; /* Để bo góc mượt hơn */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pano-container"></div>
+
+    <script src="tour.js"></script>
+
+    <script>
+function getStartScene() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('startscene') || 'scene_1';
+}
+
+embedpano({
+    xml: "tour.xml",
+    target: "pano-container",
+    html5: "always",
+    vars: {
+        startscene: getStartScene()
+    },
+    onready: function(krpano_interface) {
+        window.krpano = krpano_interface;
+    }
+});
+    </script>
+
+</body>
+</html>

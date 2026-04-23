@@ -20,13 +20,21 @@ TravelAI/
 │   └── config/
 │       └── database.php
 ├── database/
-│   └── schema.sql
+│   ├── schema.sql
+│   └── migrations/
+│       └── 2026_04_23_add_vr_scene.sql
 ├── frontend/
 │   ├── index.html
 │   ├── css/
 │   │   └── styles.css
 │   └── js/
 │       └── app.js
+├── vtour/
+│   ├── index.html
+│   ├── tour.xml
+│   ├── skin/
+│   ├── plugins/
+│   └── panos/
 └── index.php
 ```
 
@@ -34,14 +42,19 @@ TravelAI/
 
 1. Đặt source tại `C:\xampp\htdocs\TravelAI`.
 2. Mở `phpMyAdmin`, import file `database/schema.sql`.
-3. Đảm bảo MySQL user `root` password rỗng (hoặc sửa trong `backend/config/database.php`).
-4. Truy cập:
+3. Nếu bạn đã có DB cũ, chạy thêm `database/migrations/2026_04_23_add_vr_scene.sql`.
+4. Đảm bảo MySQL user `root` password rỗng (hoặc sửa trong `backend/config/database.php`).
+5. Truy cập:
    - `http://localhost/TravelAI/` (tự chuyển về frontend).
 
-## Gắn link VR360 krpano thật
+## VR360 krpano + hotspot
 
-Trong bảng `places`, cập nhật cột `vr_url` theo từng điểm:
+- Hệ thống ưu tiên `places.vr_url` nếu có.
+- Nếu `vr_url` rỗng, hệ thống tự mở `vtour/index.html?startscene=<vr_scene>`.
+- Hotspot điều hướng scene được lấy từ `vtour/tour.xml` (đã có sẵn).
+
+Cập nhật scene cho từng địa điểm:
 
 ```sql
-UPDATE places SET vr_url = 'https://your-krpano-tour-link' WHERE slug = 'ky-co';
+UPDATE places SET vr_scene = 'scene_thanhpho360' WHERE slug = 'ghenh-rang';
 ```

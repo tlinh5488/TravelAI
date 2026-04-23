@@ -119,13 +119,23 @@ function renderPlaceCard(place) {
     </div>
   `;
 
-  document.getElementById('openVrBtn').onclick = () => openVr(place.vr_url);
+  document.getElementById('openVrBtn').onclick = () => openVr(place);
   document.getElementById('addToPlanBtn').onclick = () => addToItinerary(place.id);
 }
 
-function openVr(url) {
+function openVr(place) {
+  const url = resolveVrTourUrl(place);
   vrFrame.src = url;
   vrModal.classList.remove('hidden');
+}
+
+function resolveVrTourUrl(place) {
+  if (place.vr_url && place.vr_url.trim() !== '') {
+    return place.vr_url;
+  }
+
+  const scene = (place.vr_scene || 'scene_1').trim();
+  return `${rootPath}/vtour/index.html?startscene=${encodeURIComponent(scene)}`;
 }
 
 closeVrBtn.addEventListener('click', () => {

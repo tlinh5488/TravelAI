@@ -1,0 +1,96 @@
+﻿<krpano version="1.23" title="Virtual Tour" showlog="true">
+
+    <action name="action_bounce">
+        tween(hotspot[%1].oy, -8, 1.0, easeInOutSine, 
+            tween(hotspot[%1].oy, 0, 1.0, easeInOutSine, action_bounce(%1));
+        );
+    </action>
+
+    <action name="action_pulse">
+        set(hotspot[%1].alpha, 0.6); 
+        set(hotspot[%1].scale, 0.3);
+        tween(hotspot[%1].alpha, 0.0, 2.0, easeOutQuad);
+        tween(hotspot[%1].scale, 1.3, 2.0, easeOutQuad, action_pulse(%1));
+    </action>
+
+    <action name="add_pulse_base">
+        txtadd(bname, %1, '_base');
+        addhotspot(get(bname));
+        
+        set(hotspot[get(bname)].type, 'text');
+        copy(hotspot[get(bname)].ath, hotspot[%1].ath);
+        copy(hotspot[get(bname)].atv, hotspot[%1].atv);
+        
+        set(hotspot[get(bname)].width, 50); set(hotspot[get(bname)].height, 50);
+        set(hotspot[get(bname)].bgroundedge, 25);
+        set(hotspot[get(bname)].bgcolor, 0xFF0000); 
+        set(hotspot[get(bname)].bgalpha, 0.5);
+        set(hotspot[get(bname)].enabled, false); set(hotspot[get(bname)].distorted, true);
+        
+        txtadd(pulse_cmd, 'action_pulse(', get(bname), ')');
+        set(hotspot[get(bname)].onloaded, get(pulse_cmd));
+    </action>
+
+<action name="add_hotspot_label">
+        txtadd(lname, %1, '_lbl');
+        addhotspot(get(lname));
+        
+        set(hotspot[get(lname)].type, 'text');
+        
+        txtadd(myhtml, '<div style="background: rgba(255, 255, 255, 0.95); color: #900000; padding: 4px 12px; border-radius: 15px; border: 1px solid rgba(255, 0, 0, 0.3); font-family: \'Segoe UI\', Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; box-shadow: 0 3px 8px rgba(255, 0, 0, 0.15); display: inline-block;">📍 ', get(hotspot[%1].tooltip), '</div>');
+        set(hotspot[get(lname)].html, get(myhtml)); 
+        
+        copy(hotspot[get(lname)].ath, hotspot[%1].ath); 
+        copy(hotspot[get(lname)].atv, hotspot[%1].atv);
+        
+        set(hotspot[get(lname)].oy, 18); 
+        set(hotspot[get(lname)].edge, 'top');
+        set(hotspot[get(lname)].distorted, false); 
+        set(hotspot[get(lname)].enabled, false);
+        set(hotspot[get(lname)].zorder, 100);
+        set(hotspot[get(lname)].bg, false); 
+    </action>
+
+    <include url="skin/vtourskin.xml" />
+    <skin_settings maps="false" gyro="true" webvr="true" thumbs="true" title="true" tooltips_hotspots="false" />
+
+    <style name="style_dinh_vi_thong_minh" 
+           url="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120'%3E%3Cdefs%3E%3Cfilter id='red-shadow' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeDropShadow dx='0' dy='6' stdDeviation='5' flood-color='%238B0000' flood-opacity='0.4'/%3E%3C/filter%3E%3ClinearGradient id='red-grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23FF3333' /%3E%3Cstop offset='100%25' stop-color='%23CC0000' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 0C22.4 0 0 22.4 0 50c0 38.8 50 70 50 70s50-31.2 50-70C100 22.4 77.6 0 50 0zm0 75a25 25 0 1 1 0-50 25 25 0 0 1 0 50z' fill='url(%23red-grad)' filter='url(%23red-shadow)'/%3E%3C/svg%3E" 
+           scale="0.3" 
+           edge="bottom"
+           distorted="false"
+           onloaded="add_pulse_base(get(name)); add_hotspot_label(get(name)); action_bounce(get(name));"
+           onover="tween(scale, 0.35, 0.3, easeOutBack);"
+           onout="tween(scale, 0.3, 0.3);"
+           onclick="skin_hotspotstyle_click();"
+           />
+
+    <scene name="scene_1" title="Bình minh Gành Đá Đĩa" onstart="" thumburl="panos/sunrise_at_ganh_da_dia_phu_yen_vietnam_bnh_minh_gnh_da_ph_yn_PN8D7T.tiles/thumb.jpg">
+        <view hlookat="0.0" vlookat="0.0" fov="120" />
+        <image>
+            <cube url="panos/sunrise_at_ganh_da_dia_phu_yen_vietnam_bnh_minh_gnh_da_ph_yn_PN8D7T.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,1024" />
+        </image>
+        <hotspot name="spot1" style="style_dinh_vi_thong_minh" tooltip="Bình minh Gành Đá Đĩa" ath="0" atv="0" linkedscene="scene_2" />
+    </scene>
+
+    <scene name="scene_2" title="Gành Đá Đĩa 2" onstart="" thumburl="panos/z7714843879341_3dd8308ac4d2bc07b8b22f89590478cc.tiles/thumb.jpg">
+        <view hlookat="0.0" vlookat="0.0" fov="120" />
+        <image stereo="true" stereolabels="1|2">
+            <cube url="panos/z7714843879341_3dd8308ac4d2bc07b8b22f89590478cc.tiles/%t/%s/l%l/%v/l%l_%t/%s_%v_%h.jpg" multires="512,768" />
+        </image>
+        <hotspot name="spot2" style="style_dinh_vi_thong_minh" tooltip="Kí túc xá và phòng y tế" ath="-93.023" atv="50.169" linkedscene="scene_1" />
+    </scene>
+	
+	<scene name="scene_thanhpho360" title="thanhpho360" onstart="" thumburl="panos/thanhpho360.tiles/thumb.jpg" lat="" lng="" alt="" heading="">
+		<control bouncinglimits="calc:image.cube ? true : false" />
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+		<preview url="panos/thanhpho360.tiles/preview.jpg" />
+		<image>
+			<cube url="panos/thanhpho360.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,640" />
+		</image>
+
+		<hotspot name="spot1985131347" style="style_dinh_vi_thong_minh" tooltip="DEMO" ath="15.922" atv="25.888" depth="1000.0" linkedscene="scene_1" linkedscene_hoffset="0.0" use3dtransition="true" />
+	</scene>
+
+
+</krpano>

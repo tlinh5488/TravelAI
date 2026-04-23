@@ -1,0 +1,85 @@
+﻿<krpano version="1.23" title="Virtual Tour" showlog="true">
+
+    <action name="action_bounce" scope="local" args="hsname">
+        tween(hotspot[get(hsname)].oy, -15, 0.5, easeInOutQuad, 
+            tween(hotspot[get(hsname)].oy, 0, 0.5, easeInOutQuad, action_bounce(get(hsname)));
+        );
+    </action>
+
+    <action name="action_pulse" scope="local" args="hsname">
+        set(hotspot[get(hsname)].alpha, 1.0); 
+        set(hotspot[get(hsname)].scale, 0.3);
+        tween(hotspot[get(hsname)].alpha, 0.0, 1.2);
+        tween(hotspot[get(hsname)].scale, 1.2, 1.2, default, action_pulse(get(hsname)));
+    </action>
+
+    <action name="add_pulse_base" scope="local" args="parentname">
+        txtadd(bname, get(parentname), '_base');
+        addhotspot(get(bname), hs);
+        set(hs.type, 'text');
+        
+        copy(hs.ath, hotspot[get(parentname)].ath);
+        copy(hs.atv, hotspot[get(parentname)].atv);
+        
+        set(hs.width, 80); set(hs.height, 80);
+        set(hs.bgroundedge, 40);
+        set(hs.bgcolor, 0xFFFFFF); set(hs.bgalpha, 0.6);
+        set(hs.enabled, false); set(hs.distorted, true);
+        set(hs.onloaded, action_pulse(get(name))); 
+    </action>
+
+    <action name="add_hotspot_label" scope="local" args="parentname, labeltext">
+        txtadd(lname, get(parentname), '_lbl');
+        addhotspot(get(lname), hs);
+        
+        set(hs.type, 'text');
+        set(hs.html, get(labeltext)); 
+        
+        copy(hs.ath, hotspot[get(parentname)].ath); 
+        copy(hs.atv, hotspot[get(parentname)].atv);
+        
+        set(hs.oy, 25); 
+        set(hs.edge, 'top');
+        set(hs.distorted, false); set(hs.enabled, false);
+        set(hs.zorder, 100);
+        
+        set(hs.bg, true);
+        set(hs.bgcolor, 0x000000);
+        set(hs.bgalpha, 0.7);
+        set(hs.bgroundedge, 5);
+        set(hs.padding, '5 10');
+        set(hs.css, 'color:#FFFFFF; font-family:Arial; font-size:14px; font-weight:bold; text-align:center;');
+    </action>
+
+    <include url="skin/vtourskin.xml" />
+
+    <skin_settings maps="false" gyro="true" webvr="true" thumbs="true" title="true" tooltips_hotspots="false" />
+
+    <style name="style_dinh_vi_thong_minh" 
+           url="skin/pin.png" 
+           scale="0.5" 
+           edge="bottom"
+           distorted="false"
+           onloaded="add_pulse_base(get(name)); add_hotspot_label(get(name), get(tooltip)); action_bounce(get(name));"
+           onover="tween(scale, 0.6, 0.2);"
+           onout="tween(scale, 0.5, 0.2);"
+           onclick="skin_hotspotstyle_click();"
+           />
+
+    <scene name="scene_1" title="Bình minh Gành Đá Đĩa" onstart="" thumburl="panos/sunrise_at_ganh_da_dia_phu_yen_vietnam_bnh_minh_gnh_da_ph_yn_PN8D7T.tiles/thumb.jpg">
+        <view hlookat="0.0" vlookat="0.0" fov="120" />
+        <image>
+            <cube url="panos/sunrise_at_ganh_da_dia_phu_yen_vietnam_bnh_minh_gnh_da_ph_yn_PN8D7T.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,1024" />
+        </image>
+        <hotspot name="spot1" style="style_dinh_vi_thong_minh" tooltip="Bình minh Gành Đá Đĩa" ath="0" atv="0" linkedscene="scene_2" />
+    </scene>
+
+    <scene name="scene_2" title="Gành Đá Đĩa 2" onstart="" thumburl="panos/z7714843879341_3dd8308ac4d2bc07b8b22f89590478cc.tiles/thumb.jpg">
+        <view hlookat="0.0" vlookat="0.0" fov="120" />
+        <image stereo="true" stereolabels="1|2">
+            <cube url="panos/z7714843879341_3dd8308ac4d2bc07b8b22f89590478cc.tiles/%t/%s/l%l/%v/l%l_%t/%s_%v_%h.jpg" multires="512,768" />
+        </image>
+        <hotspot name="spot2" style="style_dinh_vi_thong_minh" tooltip="Kí túc xá và phòng y tế" ath="-93.023" atv="50.169" linkedscene="scene_1" />
+    </scene>
+
+</krpano>

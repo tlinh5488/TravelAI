@@ -10,7 +10,7 @@ try {
     $category = $_GET['category'] ?? '';
     $region = $_GET['region'] ?? '';
 
-    $sql = 'SELECT id, name, slug, description, category, region, latitude, longitude, rating, ticket_price, image_url, vr_url
+    $sql = 'SELECT id, name, slug, description, category, region, latitude, longitude, rating, ticket_price, image_url, vr_url, vr_scene
             FROM places
             WHERE 1 = 1';
     $params = [];
