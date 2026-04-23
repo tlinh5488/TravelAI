@@ -23,9 +23,10 @@ TravelAI/
 │   └── schema.sql
 ├── frontend/
 │   ├── index.html
-│   └── src/
-│       ├── app.js
-│       └── styles.css
+│   ├── css/
+│   │   └── styles.css
+│   └── js/
+│       └── app.js
 └── index.php
 ```
 
