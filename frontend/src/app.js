@@ -5,6 +5,27 @@ let currentItinerary = null;
 let locations = [];
 let selectedLocation = null;
 let markers = {};
+let krpanoDots = [];
+const krpanoSceneMarkers = [
+    {
+        lat: 13.77,
+        lng: 109.23,
+        scene: 'scene_1',
+        title: 'Bình minh Gành Đá Đĩa'
+    },
+    {
+        lat: 13.775,
+        lng: 109.235,
+        scene: 'scene_2',
+        title: 'Gành Đá Đĩa 2'
+    },
+    {
+        lat: 13.78,
+        lng: 109.24,
+        scene: 'scene_thanhpho360',
+        title: 'Thành phố 360°'
+    }
+];
 
 // ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', function() {
@@ -21,6 +42,8 @@ function initializeApp() {
         attribution: '© OpenStreetMap contributors',
         maxZoom: 19
     }).addTo(map);
+
+    addKrpanoSceneDots();
 }
 
 function setupEventListeners() {
@@ -57,14 +80,20 @@ function setupEventListeners() {
     // Modal close buttons
     document.querySelectorAll('.close-btn').forEach(btn => {
         btn.addEventListener('click', e => {
-            e.target.closest('.modal').style.display = 'none';
+            const modal = e.target.closest('.modal');
+            // Remove active state; don't rely on inline display to avoid "only works once"
+            modal.classList.remove('active');
+            modal.style.display = '';
         });
     });
     
     // Close modal on outside click
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', e => {
-            if (e.target === modal) modal.style.display = 'none';
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                modal.style.display = '';
+            }
         });
     });
 }
@@ -77,6 +106,8 @@ async function loadLocations() {
             locations = response.data.data;
             displayLocations();
             updateCategoryFilter();
+            // Ensure krpano scene dots are always clickable on top of location markers.
+            addKrpanoSceneDots();
         }
     } catch (error) {
         console.error('Error loading locations:', error);
@@ -222,11 +253,103 @@ function showLocationDetails(location) {
 // ==================== VR360 VIEWER ====================
 function viewVR360(locationId, locationName, vrUrl) {
     document.getElementById('vrTitle').textContent = locationName;
-    document.getElementById('vr360Modal').classList.add('active');
+    const modal = document.getElementById('vr360Modal');
+    // Clear inline display from previous closes
+    modal.style.display = '';
+    modal.classList.add('active');
     
     // Simple VR viewer using iframe
     const vrContainer = document.getElementById('vrContainer');
     vrContainer.innerHTML = `<iframe src="${vrUrl}" style="width: 100%; height: 100%; border: none;"></iframe>`;
+}
+
+function openKrpanoScene(sceneName, sceneTitle) {
+    const modal = document.getElementById('vr360Modal');
+    const vrTitle = document.getElementById('vrTitle');
+    const vrContainer = document.getElementById('vrContainer');
+
+    if (!modal || !vrTitle || !vrContainer) return;
+
+    vrTitle.textContent = sceneTitle || 'Trải nghiệm 360°';
+    // Clear inline display from previous closes so clicking hotspots works repeatedly
+    modal.style.display = '';
+    modal.classList.add('active');
+
+    const iframeUrl = `../vtour/tour.html?startscene=${encodeURIComponent(sceneName)}`;
+    vrContainer.innerHTML = `<iframe src="${iframeUrl}" style="width: 100%; height: 100%; border: none;"></iframe>`;
+}
+
+function addKrpanoSceneDots() {
+    if (!map) return;
+
+    // Avoid duplicates if we re-add after async loading/filter changes.
+    krpanoDots.forEach(dot => map.removeLayer(dot));
+    krpanoDots = [];
+
+    function pulseDot(marker) {
+        // Simple 2-step pulse (fast + reliable for SVG markers)
+        marker.setStyle({ fillOpacity: 1 });
+        marker.setRadius(12);
+        setTimeout(() => {
+            marker.setStyle({ fillOpacity: 0.9 });
+            marker.setRadius(8);
+        }, 180);
+    }
+
+    function rippleAt(lat, lng) {
+        // Ripple feedback on click
+        const ripple = L.circle([lat, lng], {
+            radius: 2,
+            color: '#ff4757',
+            weight: 2,
+            fill: false,
+            opacity: 0.55
+        }).addTo(map);
+
+        const start = performance.now();
+        const duration = 520;
+
+        function step(now) {
+            const t = now - start;
+            const progress = Math.min(1, t / duration);
+            const radius = 2 + progress * 28;
+            ripple.setRadius(radius);
+            ripple.setStyle({ opacity: 0.55 * (1 - progress) });
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                map.removeLayer(ripple);
+            }
+        }
+
+        requestAnimationFrame(step);
+    }
+
+    krpanoSceneMarkers.forEach(point => {
+        const marker = L.circleMarker([point.lat, point.lng], {
+            radius: 8,
+            fillColor: '#ff4757',
+            color: '#ffffff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.9,
+            zIndexOffset: 9999
+        }).addTo(map);
+
+        marker.bindTooltip(point.title, { direction: 'top', offset: [0, -8] });
+        marker.on('mouseover', () => pulseDot(marker));
+        marker.on('mouseout', () => {
+            marker.setRadius(8);
+            marker.setStyle({ fillOpacity: 0.9 });
+        });
+        marker.on('click', () => {
+            rippleAt(point.lat, point.lng);
+            openKrpanoScene(point.scene, point.title);
+        });
+        marker.bringToFront();
+        krpanoDots.push(marker);
+    });
 }
 
 // ==================== ITINERARY MANAGEMENT ====================
@@ -242,7 +365,9 @@ function openItineraryModal() {
         prioritiesDiv.appendChild(label);
     });
     
-    document.getElementById('itineraryModal').classList.add('active');
+    const modal = document.getElementById('itineraryModal');
+    modal.style.display = '';
+    modal.classList.add('active');
 }
 
 async function createItinerary(e) {
