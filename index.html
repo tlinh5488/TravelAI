@@ -6,19 +6,42 @@
     <title>Travel AI - Project Completed</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            min-height: 100vh;
-            padding: 40px 20px;
-            color: #333;
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+            min-height:100vh;
+            padding:40px 20px;
+            color:#333;
 
-            background:
-                linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3)),
-                url('../TravelAI/images/bia.jpg');
+            position:relative;
+            overflow:hidden;
+        }
 
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+        /* Layer ảnh nền */
+        body::before{
+            content:"";
+            position:fixed;
+            inset:0;
+
+            background:url('../TravelAI/images/bia.jpg') center/cover no-repeat;
+
+            /* ĐỘ MỜ ẢNH */
+            filter: blur(3px);
+
+            /* tránh bị hở viền khi blur */
+            transform: scale(1.08);
+
+            z-index:-2;
+        }
+
+        /* Overlay nhẹ để dễ đọc chữ */
+        body::after{
+            content:"";
+            position:fixed;
+            inset:0;
+
+            background:rgba(255,255,255,0.3);
+
+            z-index:-1;
         }
         .container {
             max-width: 600px;
@@ -36,7 +59,7 @@
             text-align: center;
         }
         .header h1 {
-            font-size: 36px;
+            font-size: 45px;
             margin-bottom: 10px;
         }
         .header p {
@@ -153,7 +176,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="../TravelAI/images/logotravel.png" alt="Travel AI Logo" style="width: 130px; margin-bottom: 10px;">
+            <img src="../TravelAI/images/logotravel.png" alt="Travel AI Logo" style="width: 150px; margin-bottom: 10px;">
             <h1> CoTrip </h1>
             <p>Trợ Lý Du Lịch Thông Minh - Fully Functional Web Application</p>
         </div>
