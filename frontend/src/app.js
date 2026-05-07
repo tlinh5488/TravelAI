@@ -1,5 +1,7 @@
 // ==================== CONFIGURATION ====================
-const API_BASE = 'http://localhost/TravelAI/backend/api';
+// Make API/Vtour URLs work across different machines.
+// Assumes directory layout: <root>/frontend, <root>/backend, <root>/vtour (siblings).
+const API_BASE = new URL('../backend/api', window.location.href).toString().replace(/\/$/, '');
 let map;
 let currentItinerary = null;
 let locations = [];
@@ -260,7 +262,8 @@ function viewVR360(locationId, locationName, vrUrl) {
     
     // Simple VR viewer using iframe
     const vrContainer = document.getElementById('vrContainer');
-    vrContainer.innerHTML = `<iframe src="${vrUrl}" style="width: 100%; height: 100%; border: none;"></iframe>`;
+    const normalizedVrUrl = normalizeTravelAIUrl(vrUrl);
+    vrContainer.innerHTML = `<iframe src="${normalizedVrUrl}" style="width: 100%; height: 100%; border: none;"></iframe>`;
 }
 
 function openKrpanoScene(sceneName, sceneTitle) {
@@ -275,7 +278,9 @@ function openKrpanoScene(sceneName, sceneTitle) {
     modal.style.display = '';
     modal.classList.add('active');
 
-    const iframeUrl = `../vtour/tour.html?startscene=${encodeURIComponent(sceneName)}`;
+    const iframeBase = new URL('../vtour/tour.html', window.location.href);
+    iframeBase.searchParams.set('startscene', sceneName);
+    const iframeUrl = iframeBase.toString();
     vrContainer.innerHTML = `<iframe src="${iframeUrl}" style="width: 100%; height: 100%; border: none;"></iframe>`;
 }
 
@@ -350,6 +355,22 @@ function addKrpanoSceneDots() {
         marker.bringToFront();
         krpanoDots.push(marker);
     });
+}
+
+function normalizeTravelAIUrl(url) {
+    // If DB stores absolute URL like http://localhost/TravelAI/..., map it to current host.
+    // This prevents "works on my machine" issues.
+    try {
+        const u = new URL(url, window.location.href);
+        if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') {
+            u.protocol = window.location.protocol;
+            u.host = window.location.host;
+        }
+        return u.toString();
+    } catch {
+        // For non-URL strings, keep as-is.
+        return url;
+    }
 }
 
 // ==================== ITINERARY MANAGEMENT ====================
